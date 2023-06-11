@@ -10,3 +10,5 @@ module.exports = router;
 
 //router for interns
 router.post('/functionup/interns', createIntern)
+
+module.exp

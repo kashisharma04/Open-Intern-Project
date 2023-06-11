@@ -27,7 +27,10 @@ const collegeDetails = async function (req, res) {
         const collegeName = req.query.collegeName
         const college = await collegeModel.findOne({ name: collegeName }).select({ _id: 0, name: 1, fullName: 1, logoLink: 1 })
         const collegeId = await collegeModel.findOne({ name: collegeName }).select({_id:1})
-        const intern= await internModel.find({collegeId:collegeId._id}).select({_id:1,name:1,email:1,mobile:1})
+
+        if(!collegeId) return res.status(404).send({status : true, message : "College not found"})
+
+        const intern= await internModel.find({collegeId:collegeId}).select({_id:1,name:1,email:1,mobile:1})
         const collegeObject = college.toObject();
         if(intern.length==0){
             // console.log(typeof college)
