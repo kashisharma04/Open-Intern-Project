@@ -21,7 +21,7 @@ const createCollege = async function(req,res){
     if (isName) {
       return res.status(400).send({ status: false, message: "College already registered" });
     }
-    
+
     let collegeCreated = await collegeModel.create(input)
     return res.status(201).send({ status: true, data: collegeCreated })
     }
