@@ -16,6 +16,12 @@ const createCollege = async function(req,res){
         return res.status(400).send({ status: false, message: "LogoLink is not active" });
     }   
     } catch(err) { return res.status(500).send({status : false, message : err.message}) }
+
+    const isName = await collegeModel.findOne({ name: name });
+    if (isName) {
+      return res.status(400).send({ status: false, message: "College already registered" });
+    }
+    
     let collegeCreated = await collegeModel.create(input)
     return res.status(201).send({ status: true, data: collegeCreated })
     }
