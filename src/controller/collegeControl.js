@@ -15,10 +15,15 @@ const createCollege = async function(req,res){
     if (response.status < 200 && response.status > 299 ) {
         return res.status(400).send({ status: false, message: "LogoLink is not active" });
     }   
-    } catch(err) { return res.status(500).send({status : false, message : err.message}) }
+    } catch(err) { return res.status(400).send({status : false, message : "Please provide valid link"}) }
 
     const isName = await collegeModel.findOne({ name: name });
     if (isName) {
+      return res.status(400).send({ status: false, message: "College already registered" });
+    }
+
+    const isName1 = await collegeModel.findOne({ fullName: fullName });
+    if (isName1) {
       return res.status(400).send({ status: false, message: "College already registered" });
     }
 
