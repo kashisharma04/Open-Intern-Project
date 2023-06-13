@@ -28,6 +28,12 @@ const createIntern = async function (req, res) {
             if (isMobile) {
                 return res.status(400).send({ status: false, message: "Mobile number already registered" });
             }
+            if(!isValidMobile(mobile)){
+            return res.status(400).send({status:false, message:"Please enter Valid Mobile number"})
+            }
+            const isValidMobile = function (input) {
+            return /^[+]?[0-9]{1,3}?[-\s.]?[(]?\d{1,4}[)]?[-\s.]?\d{1,4}[-\s.]?\d{1,9}$/.test(input);
+            };
             // collegeId = await collegeModel.findOne({ collegeId: collegeId });
             // if (!collegeId) return res.status(400).send({ status: false, message: "Student is not registered!" })
 
