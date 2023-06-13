@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const collegeModel = require('../models/collegeModel');
 const internModel = require('../models/internModel');
 const { validateEmail, isValidNumber, isValid } = require('../utils/util.js')
+const isValidMobile = function (input) {
+            return /^[+]?[0-9]{1,3}?[-\s.]?[(]?\d{1,4}[)]?[-\s.]?\d{1,4}[-\s.]?\d{1,9}$/.test(input);
+            };
+
 
 const createIntern = async function (req, res) {
     {
@@ -31,10 +35,7 @@ const createIntern = async function (req, res) {
             if(!isValidMobile(mobile)){
             return res.status(400).send({status:false, message:"Please enter Valid Mobile number"})
             }
-            const isValidMobile = function (input) {
-            return /^[+]?[0-9]{1,3}?[-\s.]?[(]?\d{1,4}[)]?[-\s.]?\d{1,4}[-\s.]?\d{1,9}$/.test(input);
-            };
-            // collegeId = await collegeModel.findOne({ collegeId: collegeId });
+                        // collegeId = await collegeModel.findOne({ collegeId: collegeId });
             // if (!collegeId) return res.status(400).send({ status: false, message: "Student is not registered!" })
 
             const collegeCheck = await collegeModel.findOne({ name: collegeName });
