@@ -1,5 +1,13 @@
 const collegeModel = require ('../models/collegeModel');
 const internModel = require('../models/internModel')
+const isValid = function (value) {
+    if (typeof value === "undefined" || value === null) return false;
+    if (typeof value === "string" && value.trim().length === 0) return false;
+    return true;
+};
+const isValidString = function (input) {
+    return /^[a-zA-Z0-9\s\-\.,']+$/u.test(input);
+  };
 
 const axios = require('axios');
 
@@ -33,31 +41,35 @@ const createCollege = async function(req,res){
     catch(err){ return res.status(500).send({status : false, message : err.message});}
 }
 //=========================== GET API ============================================
-const collegeDetails = async function (req, res) {
-    try {
-        const collegeName = req.query.collegeName
-        const college = await collegeModel.findOne({ name: collegeName }).select({ _id: 0, name: 1, fullName: 1, logoLink: 1 })
-        const collegeId = await collegeModel.findOne({ name: collegeName }).select({_id:1})
-
-        if(!collegeId) return res.status(404).send({status : true, message : "College not found"})
-
-        const intern= await internModel.find({collegeId:collegeId}).select({_id:1,name:1,email:1,mobile:1})
-        const collegeObject = college.toObject();
-        if(intern.length==0){
-            // console.log(typeof college)
-            collegeObject.interns= "interns are not available"
-        }else{
-            // console.log(typeof college)
-        collegeObject.interns= intern
-        }
-        if(!college){
-            res.status(404).send({status:false, message: "College not available!"})
-        }
-        res.status(200).send({ status: true, data:collegeObject })
+   let collegeDetails = async (req, res) => {
+  try{
+    let query = req.query.collegeName;
+    if(!isValid(query)){
+      return res.status(400).send({status: false,message:"Please provide Valid College details"});
     }
-    catch (err) {
-        res.status(500).send({ status: false, message: err.message })
+    if(!isValidString(query)){
+      return res.status(400).send({status: false,message:"Please provide Valid College name details"});
     }
+
+    let getCollege = await collegeModel.findOne({ name: query });
+    if (!getCollege) {
+      return res.status(400).send({ status: false, message: "No college exists with that name" });
+    }
+
+    let id = getCollege._id;
+
+    let interns = await internModel.find({ collegeId: id, isDeleted: false }).select('_id name email mobile')    
+
+    let data = {
+      name: getCollege.name,
+      fullName: getCollege.fullName,
+      logoLink: getCollege.logoLink,
+      interns: interns, //array in intern
+    };
+    return res.status(200).send({ status: true, data: data });
+  }catch(error){
+    return res.status(500).send({ status: false, message: err.message });
+  }
 }
 
 module.exports.createCollege=createCollege;
